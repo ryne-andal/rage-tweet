@@ -1,5 +1,5 @@
 var twitter = require('twitter');
-var Slack = require('slack-node')
+var Hipchat = require('node-hipchat');
 
 
 // Let's fetch Josh's latest tweets...
@@ -11,11 +11,11 @@ var twitterClient = new twitter({
 	access_token_secret: ''
 });
 
-var params = {screen_name: 'joshstrange', count: 200};
+var twitterParams = {screen_name: 'joshstrange', count: 200};
 
 var rageTweets = [];
 
-twitterClient.get("statuses/user_timeline", params, function(error, tweets, response) {
+twitterClient.get("statuses/user_timeline", twitterParams, function(error, tweets, response) {
 	if(error) throw error;
 	// console.log(tweets);
 	// console.log(response);
@@ -29,15 +29,26 @@ twitterClient.get("statuses/user_timeline", params, function(error, tweets, resp
 		var randomTweet = randomNumberino(1, rageTweets.length);
 
 		
-		var slack = new Slack();
-		slack.setWebhook('');
-		//select a random rage tweet to push to slack.
-		slack.webhook({
-			channel: "#general",
-			username: "josh-rage",
-			text: "*JOSH STRANGE RAGE TWEET OF THE DAY* <"+rageTweets[randomTweet]+">"
-		}, function(err, response) {
-			console.log(response);
+		var hipchatClient = new Hipchat('');
+		
+		var messageOneParams = {
+			room: 'General',
+			from: 'joshrage',
+			message: '<b>JOSH STRANGE RAGE TWEET OF THE DAY</b>'
+		}
+		hipchatClient.postMessage(messageOneParams, function(data) {
+			
+		});
+		
+		var hipchatParams = {
+			room: 'General',
+			from: 'joshrage',
+			message_format: 'text',
+			message: rageTweets[randomTweet]
+		};
+		
+		hipchatClient.postMessage(hipchatParams, function(data) {
+			
 		});
 		
 	}
